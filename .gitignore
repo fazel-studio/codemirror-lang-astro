@@ -1,0 +1,8 @@
+node_modules/
+modules/
+dist/
+src/parser.js
+src/parser.terms.js
+bun.lock
+*.tsbuildinfo
+*.tgz

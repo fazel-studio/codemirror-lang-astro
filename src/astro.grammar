@@ -1,0 +1,27 @@
+@top Program { Frontmatter? Markup }
+
+@skip { space }
+
+Frontmatter {
+  FenceOpen FrontmatterContent FenceClose
+}
+
+Markup {
+  MarkupContent
+}
+
+@external tokens fenceTokenizer from "./tokens.js" {
+  FenceOpen
+  FenceClose
+}
+
+@external tokens contentTokenizer from "./tokens.js" {
+  FrontmatterContent
+  MarkupContent
+}
+
+@tokens {
+  space { (" " | "\t" | "\r" | "\n")+ }
+}
+
+@detectDelim

@@ -1,0 +1,78 @@
+# File without frontmatter
+<div>Hello</div>
+==>
+Document(Element(OpenTag(StartTag,TagName,EndTag),Text,CloseTag(StartCloseTag,TagName,EndTag)))
+
+# Empty frontmatter
+---
+---
+
+<div></div>
+==>
+Document(Comment,Text,Element(OpenTag(StartTag,TagName,EndTag),CloseTag(StartCloseTag,TagName,EndTag)))
+
+# TypeScript frontmatter is parsed as code, not comment
+---
+import Layout from '../layouts/Layout.astro'
+const title = "Hello"
+---
+<Layout title={title}>
+  <h1>{title}</h1>
+</Layout>
+==>
+Document(Comment,Text,Element(OpenTag(StartTag,ComponentName,Attribute(AttributeName,Is,UnquotedAttributeValue),EndTag),Text,Element(OpenTag(StartTag,TagName,EndTag),Text,CloseTag(StartCloseTag,TagName,EndTag)),Text,CloseTag(StartCloseTag,ComponentName,EndTag)))
+
+# Lowercase native tags stay native
+<div>text</div>
+==>
+Document(Element(OpenTag(StartTag,TagName,EndTag),Text,CloseTag(StartCloseTag,TagName,EndTag)))
+
+# Expression in child text
+<h1>{title}</h1>
+==>
+Document(Element(OpenTag(StartTag,TagName,EndTag),Text,CloseTag(StartCloseTag,TagName,EndTag)))
+
+# Expression with markup inside (Phase B)
+{condition && <p>text</p>}
+==>
+Document(Text)
+
+# Attribute value expression
+<Component prop={value} />
+==>
+Document(Element(OpenTag(StartTag,ComponentName,Attribute(AttributeName,Is,UnquotedAttributeValue),EndTag)))
+
+# HTML comment in markup
+<!-- comment -->
+<div>text</div>
+==>
+Document(Comment,Text,Element(OpenTag(StartTag,TagName,EndTag),Text,CloseTag(StartCloseTag,TagName,EndTag)))
+
+# A --- fence look-alike in the middle of markup is not a fence
+<div>
+---
+</div>
+==>
+Document(Element(OpenTag(StartTag,TagName,EndTag),Text,CloseTag(StartCloseTag,TagName,EndTag)))
+
+# Fence with trailing whitespace still opens frontmatter
+---   
+const x = 1
+---   
+<div></div>
+==>
+Document(Comment,Text,Element(OpenTag(StartTag,TagName,EndTag),CloseTag(StartCloseTag,TagName,EndTag)))
+
+# Script contents are parsed as JavaScript
+<script>
+const x = 1
+</script>
+==>
+Document(Element(OpenTag(StartTag,TagName,EndTag),Script(VariableDeclaration(const,VariableDefinition,Equals,Number)),CloseTag(StartCloseTag,TagName,EndTag)))
+
+# Style contents are parsed as CSS
+<style>
+a { color: red }
+</style>
+==>
+Document(Element(OpenTag(StartTag,TagName,EndTag),StyleSheet(RuleSet(TagSelector(TagName),Block("{",Declaration(PropertyName,":",ValueName),"}"))),CloseTag(StartCloseTag,TagName,EndTag)))
