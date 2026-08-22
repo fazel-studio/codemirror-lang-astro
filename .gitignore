@@ -1,6 +1,7 @@
 node_modules/
 modules/
 dist/
+package/
 src/parser.js
 src/parser.terms.js
 bun.lock
